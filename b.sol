@@ -1,54 +1,46 @@
 Problem:    b
 Rows:       8
-Columns:    9
+Columns:    9 (9 integer, 0 binary)
 Non-zeros:  19
-Status:     OPTIMAL
-Objective:  z = -8640000 (MAXimum)
+Status:     INTEGER OPTIMAL
+Objective:  z = 10679800 (MAXimum)
 
-   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
------- ------------ -- ------------- ------------- ------------- -------------
-     1 z            B      -8.29e+06                             
-     2 entradasGold NS          -100          -100             =          6400 
+   No.   Row name        Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 z                 1.10298e+07                             
+     2 entradasGold             -100          -100             = 
      3 entradasSilver
-                    NS             0            -0             =         16000 
+                                   0            -0             = 
      4 merchandisingTotal
-                    NS             0            -0             =           800 
+                                   0            -0             = 
      5 merchandisingGold
-                    NL             0            -0                        -800 
+                                   2            -0               
      6 merchandisingSilver
-                    NL             0            -0                        -800 
+                                   0            -0               
      7 capacidadPredio
-                    B            350                        8000 
+                                8000                        8000 
      8 minimasSilver
-                    NL           500           500                      -15300 
+                                 500           500               
 
-   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
------- ------------ -- ------------- ------------- ------------- -------------
-     1 Cg           B            100             0               
-     2 Cs           B            500             0               
-     3 Cm           B          10800             0               
-     4 Pg           NL             0             0                       -6400 
-     5 Ps           NL             0             0                      -16000 
-     6 Cgv          NL             0             0                       -4900 
-     7 Csv          B            500             0               
-     8 Cmg          B            800             0               
-     9 Cms          B          10000             0               
+   No. Column name       Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 Cg           *           7750             0               
+     2 Cs           *            500             0               
+     3 Cm           *            994             0               
+     4 Pg           *              0             0               
+     5 Ps           *              0             0               
+     6 Cgv          *           7650             0               
+     7 Csv          *            500             0               
+     8 Cmg          *            969             0               
+     9 Cms          *             25             0               
 
-Karush-Kuhn-Tucker optimality conditions:
+Integer feasibility conditions:
 
 KKT.PE: max.abs.err = 0.00e+00 on row 0
         max.rel.err = 0.00e+00 on row 0
         High quality
 
 KKT.PB: max.abs.err = 0.00e+00 on row 0
-        max.rel.err = 0.00e+00 on row 0
-        High quality
-
-KKT.DE: max.abs.err = 0.00e+00 on column 0
-        max.rel.err = 0.00e+00 on column 0
-        High quality
-
-KKT.DB: max.abs.err = 0.00e+00 on row 0
         max.rel.err = 0.00e+00 on row 0
         High quality
 
