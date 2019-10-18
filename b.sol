@@ -24,15 +24,22 @@ Objective:  z = 10679800 (MAXimum)
 
    No. Column name       Activity     Lower bound   Upper bound
 ------ ------------    ------------- ------------- -------------
-     1 Cg           *           7750             0               
-     2 Cs           *            500             0               
-     3 Cm           *            994             0               
-     4 Pg           *              0             0               
-     5 Ps           *              0             0               
-     6 Cgv          *           7650             0               
-     7 Csv          *            500             0               
-     8 Cmg          *            969             0               
-     9 Cms          *             25             0               
+     1 CantidadGold *           7750             0               
+     2 CantidadSilver
+                    *            500             0               
+     3 CantidadMerchandising
+                    *            994             0               
+     4 PaquetesGold *              0             0               
+     5 PaquetesSilver
+                    *              0             0               
+     6 CantidadGoldVendidos
+                    *           7650             0               
+     7 CantidadSilverVendidos
+                    *            500             0               
+     8 CantidadMerchndisingGold
+                    *            969             0               
+     9 CantidadMerchndisingSilver
+                    *             25             0               
 
 Integer feasibility conditions:
 
