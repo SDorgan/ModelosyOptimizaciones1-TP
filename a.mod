@@ -31,25 +31,25 @@ var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 var U{i in CAPITAL} >= 1, integer;
 
 #Variable para guardar el total de estiramientos
-var E >= 0, integer;
+var Estiramientos >= 0, integer;
 
 #Variable para guardar distancia recorrida en viaje de orden i [km/período]
 var D{i in CAPITAL} >= 0;
 
 #Variable para guardar el total kilómetros recorridos [km/período]
-var TotalesKm >= 0;
+var TotalesKmRecorridos >= 0;
 
 #Variable para guardar el total de botellas de agua compradas [unidad/período]
-var A >= 0, integer;
+var AguasCompradasTotal >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 2 USD compradas [unidad/período]
-var A2 >= 0, integer;
+var AguasDe2Compradas >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 3 USD compradas [unidad/período]
-var A3 >= 0, integer;
+var AguasDe3Compradas >= 0, integer;
 
 #Binaria, indica si deben comprar la heladera
-var Yh >= 0, binary;
+var Yheladera >= 0, binary;
 
 #Variable para guardar el costo de comida
 var CostoComida >= 0;
@@ -79,7 +79,8 @@ s.t. salidaCapital{i in CAPITAL}: sum{j in CAPITAL: i<>j} Y[i,j] = 1;
 
 s.t. entradaCapital{j in CAPITAL}: sum{i in CAPITAL: i<>j} Y[i,j] = 1;
 
-s.t. orden{i in CAPITAL, j in CAPITAL}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
+#Secuencia para evitar subtours
+s.t. orden{i in CAPITAL, j in CAPITAL: i<>j}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
 
 #s.t. kilometrosTotales{i in CAPITAL, j in CAPITAL}: TotalesKm = sum{i in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
 
