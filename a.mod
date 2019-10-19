@@ -15,6 +15,9 @@ param N >= 0;
 #Precio nafta por km
 param P >= 0;
 
+#Numero muy grande
+param M = 10000000;
+
 #Distancia en km de ir de i a j, i tiene que ser distinto de j
 param DISTANCIA{i in CAPITAL, j in CAPITAL : i<>j};
 
@@ -29,6 +32,9 @@ var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Entera, indica el orden de secuencia en que la capital i es visitada (excluyendo el punto de partida)
 var U{i in CAPITAL} >= 1, integer;
+
+#Varable vibalente que indica si al ir de capital i a capital j se requiere, ademas de una noche, una noche de descanso extra
+var Ydij{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Variable para guardar el total de estiramientos
 var Estiramientos >= 0, integer;
@@ -82,7 +88,12 @@ s.t. entradaCapital{j in CAPITAL}: sum{i in CAPITAL: i<>j} Y[i,j] = 1;
 #Secuencia para evitar subtours
 s.t. orden{i in CAPITAL, j in CAPITAL: i<>j}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
 
-#s.t. kilometrosTotales{i in CAPITAL, j in CAPITAL}: TotalesKm = sum{i in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
+s.t. kilometrosTotales: TotalesKmRecorridos = sum{i in CAPITAL, j in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
+
+#Restricciones de las noches de descanso
+
+#s.t. acotacionNoches: 250 + Ydij * M >= distij * Yij >= Ydij * 250;
+
 
 solve;
 
