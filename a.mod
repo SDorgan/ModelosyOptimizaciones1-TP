@@ -31,25 +31,25 @@ var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 var U{i in CAPITAL} >= 1, integer;
 
 #Variable para guardar el total de estiramientos
-var E >= 0, integer;
+var Estiramientos >= 0, integer;
 
 #Variable para guardar distancia recorrida en viaje de orden i [km/período]
 var D{i in CAPITAL} >= 0;
 
 #Variable para guardar el total kilómetros recorridos [km/período]
-var TotalesKm >= 0;
+var TotalesKmRecorridos >= 0;
 
 #Variable para guardar el total de botellas de agua compradas [unidad/período]
-var A >= 0, integer;
+var AguasCompradasTotal >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 2 USD compradas [unidad/período]
-var A2 >= 0, integer;
+var AguasDe2Compradas >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 3 USD compradas [unidad/período]
-var A3 >= 0, integer;
+var AguasDe3Compradas >= 0, integer;
 
 #Binaria, indica si deben comprar la heladera
-var Yh >= 0, binary;
+var Yheladera >= 0, binary;
 
 #Variable para guardar el costo de comida
 var CostoComida >= 0;
