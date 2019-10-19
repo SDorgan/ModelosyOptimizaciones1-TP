@@ -3,8 +3,8 @@
 #Conjuntos:
 
 #Capitales
-set CP;
-
+set CAPITAL;
+set COORDENADAS;
 #===================================================
 
 #Parametros:
@@ -15,21 +15,26 @@ param N >= 0;
 #Precio nafta por km
 param P >= 0;
 
+#Distancia en km de ir de i a j, i tiene que ser distinto de j
+param DISTANCIA{i in CAPITAL, j in CAPITAL : i<>j};
+
+#Locacion en coordenadas X,Y
+param LOCACION{i in COORDENADAS, j in COORDENADAS : i<>j};
 #====================================================
 
 #Variables:
 
 #Binaria, vale 1 si se va desde la capital i hasta la capital j
-var Y{i in CP, j in CP: i<>j} >= 0, binary;
+var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Entera, indica el orden de secuencia en que la capital i es visitada (excluyendo el punto de partida)
-var U{i in CP} >= 1, integer;
+var U{i in CAPITAL} >= 1, integer;
 
 #Variable para guardar el total de estiramientos
 var E >= 0;
 
 #Variable para guardar distancia recorrida en viaje de orden i [km/período]
-var D{i in CP} >= 0;
+var D{i in CAPITAL} >= 0;
 
 #Variable para guardar el total kilómetros recorridos [km/período]
 var Tkm >= 0;
@@ -47,19 +52,15 @@ var A3 >= 0;
 var Yh >= 0;
 
 #Variable para guardar el costo de comida
-#(30USD*Di<=10km + 25USD*Di>10km,<=20km + 20USD*Di>20km,<=30km + 15USD*Di>30km)*2 
 var CostoComida >= 0;
 
 #Variable para guardar el costo de la bebida
-# 60USD*Yh + 2USD*A2 + 3USD*A3
 var CostoAgua >= 0;
 
 #Variable para guardar el costo de noches de hotel pagadas
-#50USD* sum DE Yij + Ydij
 var CostoHotel >= 0;
 
 #Variable para guardar el costo de nafta
-#2USD*Tkm
 var CostoNafta >= 0;
 
 #====================================================
