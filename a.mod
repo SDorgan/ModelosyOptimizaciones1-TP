@@ -28,7 +28,7 @@ param LOCACION{i in COORDENADAS, j in COORDENADAS : i<>j};
 var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Entera, indica el orden de secuencia en que la capital i es visitada (excluyendo el punto de partida)
-var U{i in CAPITAL: i<>'1'} >= 0, integer; #si hay q definir capital de partida, escribirlo en la hipotesis del informe
+var U{i in CAPITAL} >= 1, integer;
 
 #Variable para guardar el total de estiramientos
 var E >= 0, integer;
@@ -37,7 +37,7 @@ var E >= 0, integer;
 var D{i in CAPITAL} >= 0;
 
 #Variable para guardar el total kilómetros recorridos [km/período]
-var Tkm >= 0;
+var TotalesKm >= 0;
 
 #Variable para guardar el total de botellas de agua compradas [unidad/período]
 var A >= 0, integer;
@@ -79,7 +79,9 @@ s.t. salidaCapital{i in CAPITAL}: sum{j in CAPITAL: i<>j} Y[i,j] = 1;
 
 s.t. entradaCapital{j in CAPITAL}: sum{i in CAPITAL: i<>j} Y[i,j] = 1;
 
-s.t. orden{i in CAPITAL, j in CAPITAL: i<>j and i<>'1' and j<>'1'}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
+s.t. orden{i in CAPITAL, j in CAPITAL}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
+
+s.t. kilometrosTotales{i in CAPITAL, j in CAPITAL}: TotalesKm = sum{i in CAPITAL, j in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
 
 solve;
 
