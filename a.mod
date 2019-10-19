@@ -81,7 +81,7 @@ s.t. entradaCapital{j in CAPITAL}: sum{i in CAPITAL: i<>j} Y[i,j] = 1;
 
 s.t. orden{i in CAPITAL, j in CAPITAL}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
 
-s.t. kilometrosTotales{i in CAPITAL, j in CAPITAL}: TotalesKm = sum{i in CAPITAL, j in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
+#s.t. kilometrosTotales{i in CAPITAL, j in CAPITAL}: TotalesKm = sum{i in CAPITAL, j in CAPITAL: i<>j} DISTANCIA[i,j] * Y[i,j];
 
 solve;
 
