@@ -28,10 +28,10 @@ param LOCACION{i in COORDENADAS, j in COORDENADAS : i<>j};
 var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Entera, indica el orden de secuencia en que la capital i es visitada (excluyendo el punto de partida)
-var U{i in CAPITAL} >= 1, integer;
+var U{i in CAPITAL: i<>'1'} >= 0, integer; #si hay q definir capital de partida, escribirlo en la hipotesis del informe
 
 #Variable para guardar el total de estiramientos
-var E >= 0;
+var E >= 0, integer;
 
 #Variable para guardar distancia recorrida en viaje de orden i [km/período]
 var D{i in CAPITAL} >= 0;
@@ -40,16 +40,16 @@ var D{i in CAPITAL} >= 0;
 var Tkm >= 0;
 
 #Variable para guardar el total de botellas de agua compradas [unidad/período]
-var A >= 0;
+var A >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 2 USD compradas [unidad/período]
-var A2 >= 0;
+var A2 >= 0, integer;
 
 #Variable para guardar el total de botellas de agua de 3 USD compradas [unidad/período]
-var A3 >= 0;
+var A3 >= 0, integer;
 
 #Binaria, indica si deben comprar la heladera
-var Yh >= 0;
+var Yh >= 0, binary;
 
 #Variable para guardar el costo de comida
 var CostoComida >= 0;
@@ -68,22 +68,29 @@ var CostoNafta >= 0;
 #Funcional: Minimizar el costo de visitar todas las capitales
 #Calculado como: Costo total de comida (dos personas), más costo total de botellas de agua, más costo total de hotel, más costo total de nafta.
 
-minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
-
+#minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
+#minimize z: sum{i in CAPITAL, j in CAPITAL : i<>j} DISTANCIA[i,j]*Y[i,j];
 
 #====================================================
 
 #Restricciones:
+
+s.t. salidaCapital{i in CAPITAL}: sum{j in CAPITAL: i<>j} Y[i,j] = 1;
+
+s.t. entradaCapital{j in CAPITAL}: sum{i in CAPITAL: i<>j} Y[i,j] = 1;
+
+s.t. orden{i in CAPITAL, j in CAPITAL: i<>j and i<>'1' and j<>'1'}: U[i] - U[j] + card(CAPITAL) * Y[i,j] <= card(CAPITAL) - 1;
 
 solve;
 
 printf "\n#################################\n\n";
 printf 'RECORRIDO: \n';
 printf '--------\n';
+printf 'CANTIDAD CAPITALES:\n';
 printf 'DISTANCIA TOTAL: \n';
 printf 'PRECIO POR KM: \n';
 printf 'COSTO DEL VIAJE:\n';  
-printf 'Costos : $ %8.2f\n', z;
+printf 'Costos : $ %8.2f\n';
 printf "\n#################################\n\n";
 
 end;
