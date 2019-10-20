@@ -76,8 +76,8 @@ var CostoNafta >= 0;
 #Funcional: Minimizar el costo de visitar todas las capitales
 #Calculado como: Costo total de comida (dos personas), más costo total de botellas de agua, más costo total de hotel, más costo total de nafta.
 
+minimize z: 50 * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j];
 #minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
-#minimize z: sum{i in CAPITAL, j in CAPITAL : i<>j} DISTANCIA[i,j]*Y[i,j];
 
 #====================================================
 
@@ -97,6 +97,10 @@ s.t. kilometrosTotales: TotalesKmRecorridos = sum{i in CAPITAL, j in CAPITAL: i<
 s.t. acotacionNoches{i in CAPITAL, j in CAPITAL: i<>j}: 250 + Yd[i,j] * M >= DISTANCIA[i,j] * Y[i,j]; 
 s.t. acotacionNoches2{i in CAPITAL, j in CAPITAL: i<>j}: DISTANCIA[i,j] * Y[i,j] >= Yd[i,j] * 250;
 s.t. nochesTotales{i in CAPITAL, j in CAPITAL: i<>j}: N[i,j] = Y[i,j] + Yd[i,j];
+
+#Restricciones del agua
+
+
 
 
 solve;
