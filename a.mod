@@ -17,6 +17,18 @@ param P >= 0;
 
 param M := 10000;
 
+param CostoAlojamiento := 50;
+
+param CostoHeladera := 60;
+
+param CostoAguaBarata := 2;
+
+param CostoAguaCara := 3;
+
+param ViajeLargo := 250;
+
+param kmDeEstiramiento := 100;
+
 #Distancia en km de ir de i a j, i tiene que ser distinto de j
 param DISTANCIA{i in CAPITAL, j in CAPITAL : i<>j};
 
@@ -28,6 +40,9 @@ param LOCACION{i in COORDENADAS, j in COORDENADAS : i<>j};
 
 #Binaria, vale 1 si se va desde la capital i hasta la capital j
 var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
+
+#Binaria, vale 1 si se visito capital i antes que capital j
+var Yantes{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 
 #Entera, indica el orden de secuencia en que la capital i es visitada (excluyendo el punto de partida)
 var U{i in CAPITAL} >= 1, integer;
@@ -43,6 +58,55 @@ var Estiramientos >= 0, integer;
 
 #Variable para guardar distancia recorrida en viaje de orden i [km/período]
 var D{i in CAPITAL} >= 0;
+
+#Variable para guardar la distancia recorrida en el viaje de orden i habiendose recorrido en total menos de 10mil km
+var Dmenor10mil{i in CAPITAL} >= 0;
+
+#Variable para guardar la distancia recorrida en el viaje de orden i habiendose recorrido en total mas de 10mil km y menos de 20mil km
+var Dmayor10milMenor20mil{i in CAPITAL} >= 0;
+
+#Variable para guardar la distancia recorrida en el viaje de orden i habiendose recorrido en total mas de 20mil km y menos de 30mil km
+var Dmayor20milMenor30mil{i in CAPITAL} >= 0;
+
+#Variable para guardar la distancia recorrida en el viaje de orden i habiendose recorrido en total mas de 30mil km
+var Dmayor30mil{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km
+var Ymenor10mil{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km y menos de 20mil km
+var Ymayor10milmenor20mil{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km y menos de 30mil km
+var Ymayor20milmenor30mil{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km
+var Ymayor30mil{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km y durmiendo 1 noche alli
+var Ymenor10mil1Noche{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km, menos de 20mil km y durmiendo 1 noche alli
+var Ymayor10milmenor20mil1Noche{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km, menos de 30mil km y durmiendo 1 noche alli
+var Ymayor20milmenor30mil1Noche{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km y durmiendo 1 noche alli
+var Ymayor30mil1Noche{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km y durmiendo 2 noches alli
+var Ymenor10mil2Noches{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km, menos de 20mil km y durmiendo 2 noches alli
+var Ymayor10milmenor20mil2Noches{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km, menos de 30mil km y durmiendo 2 noches alli
+var Ymayor20milmenor30mil2Noches{i in CAPITAL} >= 0;
+
+#Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km y durmiendo 2 noches alli
+var Ymayor30mil2Noches{i in CAPITAL} >= 0;
+
 
 #Variable para guardar el total kilómetros recorridos [km/período]
 var TotalesKmRecorridos >= 0;
@@ -76,7 +140,8 @@ var CostoNafta >= 0;
 #Funcional: Minimizar el costo de visitar todas las capitales
 #Calculado como: Costo total de comida (dos personas), más costo total de botellas de agua, más costo total de hotel, más costo total de nafta.
 
-minimize z: 50 * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j];
+minimize z: CostoAlojamiento * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j] + CostoHeladera * Yheladera + AguasDe2Compradas * CostoAguaBarata +
+AguasDe3Compradas * CostoAguaCara;
 #minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
 
 #====================================================
@@ -94,13 +159,21 @@ s.t. kilometrosTotales: TotalesKmRecorridos = sum{i in CAPITAL, j in CAPITAL: i<
 
 #Restricciones de las noches de descanso
 
-s.t. acotacionNoches{i in CAPITAL, j in CAPITAL: i<>j}: 250 + Yd[i,j] * M >= DISTANCIA[i,j] * Y[i,j]; 
-s.t. acotacionNoches2{i in CAPITAL, j in CAPITAL: i<>j}: DISTANCIA[i,j] * Y[i,j] >= Yd[i,j] * 250;
+s.t. acotacionNoches{i in CAPITAL, j in CAPITAL: i<>j}: ViajeLargo + Yd[i,j] * M >= DISTANCIA[i,j] * Y[i,j]; 
+s.t. acotacionNoches2{i in CAPITAL, j in CAPITAL: i<>j}: DISTANCIA[i,j] * Y[i,j] >= Yd[i,j] * ViajeLargo;
 s.t. nochesTotales{i in CAPITAL, j in CAPITAL: i<>j}: N[i,j] = Y[i,j] + Yd[i,j];
+
 
 #Restricciones del agua
 
+s.t. cantidadTotalEstiramientos: Estiramientos = TotalesKmRecorridos / kmDeEstiramiento;
+s.t. cantidadTotalAguas: 2 * Estiramientos / 2 = AguasCompradasTotal;
+s.t. conformacionAguas: AguasCompradasTotal = AguasDe2Compradas + AguasDe3Compradas;
+s.t. acotacionAguasDe2: AguasDe2Compradas <= Yheladera * M;
 
+#Acumulacion de kilometros
+
+#s.t. acumulacionKilometros{i in CAPITAL}: D[i] = sum{j in CAPITAL: i<>j} Yantes[i,j] * DISTANCIA[i,j];
 
 
 solve;
