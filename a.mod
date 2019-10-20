@@ -15,7 +15,7 @@ param C >= 0;
 #Precio nafta por km
 param P >= 0;
 
-param M := 10000;
+param M := 100000000000000000000;
 
 param CostoNafta := 2;
 
@@ -30,6 +30,20 @@ param CostoAguaCara := 3;
 param ViajeLargo := 250;
 
 param kmDeEstiramiento := 100;
+
+param CostoComidaMenor10mil := 60;
+
+param CostoComidaMayor10milMenor20mil := 50;
+
+param CostoComidaMayor20milMenor30mil := 40;
+
+param CostoComidaMayor30mil := 30;
+
+param Distancia10mil := 10000;
+
+param Distancia20mil := 20000;
+
+param Distancia30mil := 30000;
 
 #Distancia en km de ir de i a j, i tiene que ser distinto de j
 param DISTANCIA{i in CAPITAL, j in CAPITAL : i<>j};
@@ -130,7 +144,9 @@ var Yheladera >= 0, binary;
 #Funcional: Minimizar el costo de visitar todas las capitales
 #Calculado como: Costo total de comida (dos personas), más costo total de botellas de agua, más costo total de hotel, más costo total de nafta.
 
-minimize z: CostoNafta * TotalesKmRecorridos + CostoAlojamiento * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j] + CostoHeladera * Yheladera + AguasDe2Compradas * CostoAguaBarata + AguasDe3Compradas * CostoAguaCara;
+minimize z: CostoNafta * TotalesKmRecorridos + CostoAlojamiento * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j] + CostoHeladera * Yheladera + AguasDe2Compradas * CostoAguaBarata + AguasDe3Compradas * CostoAguaCara + CostoComidaMenor10mil * sum{i in CAPITAL} Ymenor10mil1Noche[i] + 2 * CostoComidaMenor10mil * sum{i in CAPITAL} Ymenor10mil2Noches[i] + CostoComidaMayor10milMenor20mil * sum{i in CAPITAL} Ymayor10milmenor20mil1Noche[i] + 2 * CostoComidaMayor10milMenor20mil * sum{i in CAPITAL} Ymayor10milmenor20mil2Noches[i] + CostoComidaMayor20milMenor30mil * sum{i in CAPITAL} Ymayor20milmenor30mil1Noche[i] + 2 * CostoComidaMayor20milMenor30mil * sum{i in CAPITAL} Ymayor20milmenor30mil2Noches[i] + CostoComidaMayor30mil * sum{i in CAPITAL} Ymayor30mil1Noche[i] + 2 * CostoComidaMayor30mil * sum{i in CAPITAL} Ymayor30mil2Noches[i];
+
+
 #minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
 
 #====================================================
@@ -168,6 +184,36 @@ s.t. acotacionCapitalesAntesVisitadas2{i in CAPITAL, j in CAPITAL: i<>j}: M * Ya
 
 #Distancias recorridas segun total recorrido
 
+s.t. seleccionDeDistancia{i in CAPITAL}: D[i] = Dmenor10mil[i] + Dmayor10milMenor20mil[i] + Dmayor20milMenor30mil[i] + Dmayor30mil[i];
+s.t. seleccionDeCategDeDistancia{i in CAPITAL}: Ymenor10mil[i] + Ymayor10milmenor20mil[i] + Ymayor20milmenor30mil[i] + Ymayor30mil[i] = 1;
+
+#Definiciones de rangos
+
+s.t. rangoMenor10mil{i in CAPITAL}: Distancia10mil * Ymenor10mil[i] >= Dmenor10mil[i];
+s.t. rangoMenor10mil2{i in CAPITAL}: Ymenor10mil[i] <= Dmenor10mil[i];
+s.t. rangoMayor10milMenor20mil{i in CAPITAL}: Distancia20mil * Ymayor10milmenor20mil[i] >= Dmayor10milMenor20mil[i];
+s.t. rangoMayor10milMenor20mil2{i in CAPITAL}: Ymayor10milmenor20mil[i] * Distancia10mil <= Dmayor10milMenor20mil[i];
+s.t. rangoMayor20milMenor30mil{i in CAPITAL}: Distancia30mil * Ymayor20milmenor30mil[i] >= Dmayor20milMenor30mil[i];
+s.t. rangoMayor20milMenor30mil2{i in CAPITAL}: Ymayor20milmenor30mil[i] * Distancia20mil <= Dmayor20milMenor30mil[i];
+s.t. rangoMayor30mil{i in CAPITAL}: M * Ymayor30mil[i] >= Dmayor30mil[i];
+s.t. rangoMayor30mil2{i in CAPITAL}: Distancia30mil* Ymayor30mil[i] <= Dmayor30mil[i];
+
+#Separaciones de rangos por noches en ciudad
+
+s.t. seleccionDeNochesMenor10mil{i in CAPITAL}: Ymenor10mil[i] = Ymenor10mil1Noche[i] + Ymenor10mil2Noches[i];
+s.t. seleccionDeNochesMayor10milMenor20mil{i in CAPITAL}: Ymayor10milmenor20mil[i] = Ymayor10milmenor20mil1Noche[i] + Ymayor10milmenor20mil2Noches[i];
+s.t. seleccionDeNochesMayor20milMenor30mil{i in CAPITAL}: Ymayor20milmenor30mil[i] = Ymayor20milmenor30mil1Noche[i] + Ymayor20milmenor30mil2Noches[i];
+s.t. seleccionDeNochesMayor30mil{i in CAPITAL}: Ymayor30mil[i] = Ymayor30mil1Noche[i] + Ymayor30mil2Noches[i];
+
+#Seleccion final de comidas por ciudad
+
+#Si Yrango = 0, Y2Noches va a ser 0 por la seleccionDeNoches.
+#Si Sum(Yd) = 0 y Ymenor10mil = 1, Y2Noches puede ser 1 o 0, pero el modelo va a minimizar, por lo que la va a querer tirar a 0 (2 noches cuesta más que 1 noche)
+#Si Sum(Yd) = 1 y Ymenor10mil = 1 Y2Noches tiene que ser 1 si o si.
+s.t. seleccion2NochesDistanciaMenor10mil{i in CAPITAL}: 1 + Ymenor10mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymenor10mil[i];
+s.t. seleccion2NochesDistanciaMayor10milMenor20mil{i in CAPITAL}: 1 + Ymayor10milmenor20mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor10milmenor20mil[i];
+s.t. seleccion2NochesDistanciaMayor20milMenor30mil{i in CAPITAL}: 1 + Ymayor20milmenor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor20milmenor30mil[i];
+s.t. seleccion2NochesDistanciaMayor30mil{i in CAPITAL}: 1 + Ymayor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor30mil[i];
 
 solve;
 
