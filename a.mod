@@ -10,13 +10,12 @@ set COORDENADAS;
 #Parametros:
 
 #Cantidad de capitales
-param N >= 0;
+param C >= 0;
 
 #Precio nafta por km
 param P >= 0;
 
-#Numero muy grande
-param M = 10000000;
+param M := 10000;
 
 #Distancia en km de ir de i a j, i tiene que ser distinto de j
 param DISTANCIA{i in CAPITAL, j in CAPITAL : i<>j};
@@ -34,7 +33,10 @@ var Y{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
 var U{i in CAPITAL} >= 1, integer;
 
 #Varable vibalente que indica si al ir de capital i a capital j se requiere, ademas de una noche, una noche de descanso extra
-var Ydij{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
+var Yd{i in CAPITAL, j in CAPITAL: i<>j} >= 0, binary;
+
+#Variable que indica la cantidad de noches que se descansaron al ir de capital i a j
+var N{i in CAPITAL, j in CAPITAL: i<>j} >= 0, integer;
 
 #Variable para guardar el total de estiramientos
 var Estiramientos >= 0, integer;
@@ -92,7 +94,9 @@ s.t. kilometrosTotales: TotalesKmRecorridos = sum{i in CAPITAL, j in CAPITAL: i<
 
 #Restricciones de las noches de descanso
 
-#s.t. acotacionNoches: 250 + Ydij * M >= distij * Yij >= Ydij * 250;
+s.t. acotacionNoches{i in CAPITAL, j in CAPITAL: i<>j}: 250 + Yd[i,j] * M >= DISTANCIA[i,j] * Y[i,j]; 
+s.t. acotacionNoches2{i in CAPITAL, j in CAPITAL: i<>j}: DISTANCIA[i,j] * Y[i,j] >= Yd[i,j] * 250;
+s.t. nochesTotales{i in CAPITAL, j in CAPITAL: i<>j}: N[i,j] = Y[i,j] + Yd[i,j];
 
 
 solve;
