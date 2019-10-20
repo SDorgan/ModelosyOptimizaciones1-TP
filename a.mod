@@ -17,6 +17,8 @@ param P >= 0;
 
 param M := 10000;
 
+param CostoNafta := 2;
+
 param CostoAlojamiento := 50;
 
 param CostoHeladera := 60;
@@ -123,25 +125,12 @@ var AguasDe3Compradas >= 0, integer;
 #Binaria, indica si deben comprar la heladera
 var Yheladera >= 0, binary;
 
-#Variable para guardar el costo de comida
-var CostoComida >= 0;
-
-#Variable para guardar el costo de la bebida
-var CostoAgua >= 0;
-
-#Variable para guardar el costo de noches de hotel pagadas
-var CostoHotel >= 0;
-
-#Variable para guardar el costo de nafta
-var CostoNafta >= 0;
-
 #====================================================
 
 #Funcional: Minimizar el costo de visitar todas las capitales
 #Calculado como: Costo total de comida (dos personas), más costo total de botellas de agua, más costo total de hotel, más costo total de nafta.
 
-minimize z: CostoAlojamiento * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j] + CostoHeladera * Yheladera + AguasDe2Compradas * CostoAguaBarata +
-AguasDe3Compradas * CostoAguaCara;
+minimize z: CostoNafta * TotalesKmRecorridos + CostoAlojamiento * sum{i in CAPITAL, j in CAPITAL : i<>j} N[i,j] + CostoHeladera * Yheladera + AguasDe2Compradas * CostoAguaBarata + AguasDe3Compradas * CostoAguaCara;
 #minimize z: CostoComida + CostoAgua + CostoHotel + CostoNafta;
 
 #====================================================
@@ -173,19 +162,13 @@ s.t. acotacionAguasDe2: AguasDe2Compradas <= Yheladera * M;
 
 #Acumulacion de kilometros
 
-#s.t. acumulacionKilometros{i in CAPITAL}: D[i] = sum{j in CAPITAL: i<>j} Yantes[i,j] * DISTANCIA[i,j];
+s.t. acumulacionKilometros{i in CAPITAL}: D[i] = sum{j in CAPITAL: i<>j} Yantes[i,j] * DISTANCIA[i,j];
+s.t. acotacionCapitalesAntesVisitadas1{i in CAPITAL, j in CAPITAL: i<>j}: -M * (1 - Yantes[i, j]) <= U[j] - U[i];
+s.t. acotacionCapitalesAntesVisitadas2{i in CAPITAL, j in CAPITAL: i<>j}: M * Yantes[i, j] >= U[j] - U[i];
+
+#Distancias recorridas segun total recorrido
 
 
 solve;
-
-printf "\n#################################\n\n";
-printf 'RECORRIDO: \n';
-printf '--------\n';
-printf 'CANTIDAD CAPITALES:\n';
-printf 'DISTANCIA TOTAL: \n';
-printf 'PRECIO POR KM: \n';
-printf 'COSTO DEL VIAJE:\n';  
-printf 'Costos : $ %8.2f\n';
-printf "\n#################################\n\n";
 
 end;
