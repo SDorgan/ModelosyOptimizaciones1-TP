@@ -85,43 +85,43 @@ var Dmayor10milMenor20mil{i in CAPITAL} >= 0;
 var Dmayor20milMenor30mil{i in CAPITAL} >= 0;
 
 #Variable para guardar la distancia recorrida en el viaje de orden i habiendose recorrido en total mas de 30mil km
-var Dmayor30mil{i in CAPITAL} >= 0;
+var Dmayor30mil{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km
-var Ymenor10mil{i in CAPITAL} >= 0;
+var Ymenor10mil{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km y menos de 20mil km
-var Ymayor10milmenor20mil{i in CAPITAL} >= 0;
+var Ymayor10milmenor20mil{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km y menos de 30mil km
-var Ymayor20milmenor30mil{i in CAPITAL} >= 0;
+var Ymayor20milmenor30mil{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km
-var Ymayor30mil{i in CAPITAL} >= 0;
+var Ymayor30mil{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km y durmiendo 1 noche alli
-var Ymenor10mil1Noche{i in CAPITAL} >= 0;
+var Ymenor10mil1Noche{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km, menos de 20mil km y durmiendo 1 noche alli
-var Ymayor10milmenor20mil1Noche{i in CAPITAL} >= 0;
+var Ymayor10milmenor20mil1Noche{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km, menos de 30mil km y durmiendo 1 noche alli
-var Ymayor20milmenor30mil1Noche{i in CAPITAL} >= 0;
+var Ymayor20milmenor30mil1Noche{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km y durmiendo 1 noche alli
-var Ymayor30mil1Noche{i in CAPITAL} >= 0;
+var Ymayor30mil1Noche{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido menos de 10mil km y durmiendo 2 noches alli
-var Ymenor10mil2Noches{i in CAPITAL} >= 0;
+var Ymenor10mil2Noches{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 10mil km, menos de 20mil km y durmiendo 2 noches alli
-var Ymayor10milmenor20mil2Noches{i in CAPITAL} >= 0;
+var Ymayor10milmenor20mil2Noches{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 20mil km, menos de 30mil km y durmiendo 2 noches alli
-var Ymayor20milmenor30mil2Noches{i in CAPITAL} >= 0;
+var Ymayor20milmenor30mil2Noches{i in CAPITAL} >= 0, binary;
 
 #Binaria, vale 1 si la capital visitada en orden i se visita habiendo recorrido mas de 30mil km y durmiendo 2 noches alli
-var Ymayor30mil2Noches{i in CAPITAL} >= 0;
+var Ymayor30mil2Noches{i in CAPITAL} >= 0, binary;
 
 
 #Variable para guardar el total kilómetros recorridos [km/período]
@@ -210,10 +210,10 @@ s.t. seleccionDeNochesMayor30mil{i in CAPITAL}: Ymayor30mil[i] = Ymayor30mil1Noc
 #Si Yrango = 0, Y2Noches va a ser 0 por la seleccionDeNoches.
 #Si Sum(Yd) = 0 y Ymenor10mil = 1, Y2Noches puede ser 1 o 0, pero el modelo va a minimizar, por lo que la va a querer tirar a 0 (2 noches cuesta más que 1 noche)
 #Si Sum(Yd) = 1 y Ymenor10mil = 1 Y2Noches tiene que ser 1 si o si.
-s.t. seleccion2NochesDistanciaMenor10mil{i in CAPITAL}: 1 + Ymenor10mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymenor10mil[i];
-s.t. seleccion2NochesDistanciaMayor10milMenor20mil{i in CAPITAL}: 1 + Ymayor10milmenor20mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor10milmenor20mil[i];
-s.t. seleccion2NochesDistanciaMayor20milMenor30mil{i in CAPITAL}: 1 + Ymayor20milmenor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor20milmenor30mil[i];
-s.t. seleccion2NochesDistanciaMayor30mil{i in CAPITAL}: 1 + Ymayor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[i,j] + Ymayor30mil[i];
+s.t. seleccion2NochesDistanciaMenor10mil{i in CAPITAL}: 1 + Ymenor10mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[j,i] + Ymenor10mil[i];
+s.t. seleccion2NochesDistanciaMayor10milMenor20mil{i in CAPITAL}: 1 + Ymayor10milmenor20mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[j,i] + Ymayor10milmenor20mil[i];
+s.t. seleccion2NochesDistanciaMayor20milMenor30mil{i in CAPITAL}: 1 + Ymayor20milmenor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[j,i] + Ymayor20milmenor30mil[i];
+s.t. seleccion2NochesDistanciaMayor30mil{i in CAPITAL}: 1 + Ymayor30mil2Noches[i] >= sum{j in CAPITAL: i<>j} Yd[j,i] + Ymayor30mil[i];
 
 solve;
 
